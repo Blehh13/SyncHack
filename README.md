@@ -1,9 +1,9 @@
-# SyncFlow — Hackathon Event Management Platform
+# SyncHack Core Engine
 ## Track 1: Documentation Synchronization (SYNC HACK)
 
-> **The product is the vehicle. The documentation sync story is the deliverable.**
+> **The Engine that keeps your docs in sync with your code.**
 
-SyncFlow is a hackathon event management platform built as a controlled demonstration vehicle for **evidence-based documentation synchronization** — proving that a product change can be automatically traced to the exact documentation pages it invalidates, and producing a reviewable PR rather than ignoring staleness or rewriting everything blindly.
+SyncHack Core is a GitHub-integrated platform that acts like a CI/CD pipeline for documentation. You connect a repository, and whenever code is pushed to the default branch, the engine analyzes the changes using the Gemini AI. If the code invalidates any documentation, SyncHack Core automatically rewrites the affected markdown files and opens a Pull Request (or directly commits to the branch) so your docs are never out of date.
 
 ---
 
@@ -11,73 +11,32 @@ SyncFlow is a hackathon event management platform built as a controlled demonstr
 
 | Path | Purpose |
 |---|---|
-| `prd/syncflow-ssot-prd-v3.1.md` | **Single Source of Truth PRD** — product spec, technical contract, AI agent instructions, acceptance criteria, business rules, traceability matrix. Implementation Readiness Score: 100/100 |
-| `openapi/openapi.yaml` | **OpenAPI 3.1 contract of record** — all 26 API endpoints with full request/response schemas, error codes, and entity definitions |
-| `docs/architecture.md` | **ARCH-001** — approved architecture decisions (Next.js 14, PostgreSQL, Prisma, argon2id, server-side sessions, TanStack Query, Vitest, shadcn/ui, Schemathesis) |
-| `docs/thally-spike-protocol.md` | **Phase 0 spike protocol** — step-by-step instructions to confirm Thally behavior before Phase 4 implementation |
-| `docs/` | Baseline documentation layer monitored by Thally |
+| `prd/synchack-core-prd-v1.0.md` | **Product Requirements Document** — product spec, user flows, and architecture for the Sync Engine. |
 
 ---
 
-## Quick Start (for the AI coding agent)
+## Architecture Overview
 
-1. Read `prd/syncflow-ssot-prd-v3.1.md` — this is your primary source of truth
-2. Read `docs/architecture.md` — all technology decisions are approved here
-3. Review `openapi/openapi.yaml` — this is the API contract you must implement against
-4. Before touching Thally: run the spike per `docs/thally-spike-protocol.md`
-
----
+- **Frontend & API:** Next.js 14 App Router
+- **Database:** PostgreSQL (Prisma)
+- **AI Integration:** Google Gemini API (Free Tier)
+- **GitHub Integration:** GitHub App for OAuth, Webhooks, and PR creation.
 
 ## Implementation Phases
 
-| Phase | Name | Prerequisite |
+| Phase | Name | Focus |
 |---|---|---|
-| 0 | Thally spike + hackathon brief | None |
-| 1 | Foundation (repo setup, Prisma schema, auth) | None |
-| 2 | API implementation (all 26 endpoints) | Phase 1 |
-| 3 | UI implementation (11 screens) | Phase 2 |
-| 4 | Thally connection | Phase 0 spike results |
-| 5 | Change scenarios (CHANGE-001, -002, -011) | Phase 4 |
-| 6 | Demo rehearsal | Phase 5 |
+| 1 | Foundation | Next.js setup, Prisma schema, GitHub OAuth login |
+| 2 | Dashboard | Listing connected repositories and configuring project settings (PR vs Direct Commit) |
+| 3 | Webhooks & GitHub API | Webhook listener for `push` events, fetching diffs, and fetching doc context |
+| 4 | AI Pipeline | Prompting Gemini to analyze diffs and rewrite markdown |
+| 5 | Output | Committing files and creating Pull Requests via GitHub API |
 
 ---
 
-## Core Product Rules
+## Core Pipeline Flow
 
-- **Every business rule has a stable ID (BR-001 through BR-016)** — see PRD Section 17
-- **`openapi/openapi.yaml` is the contract of record** — Schemathesis tests run against it on every CI run
-- **Server clock is authoritative** for all deadline comparisons — never trust client timestamps
-- **`passwordHash` never appears in any API response or log line**
-- **Business rules live in the service layer** — not in route handlers, not in the database
-
----
-
-## Demonstration Scenarios
-
-| Scenario | Change | Docs Expected to Update |
-|---|---|---|
-| CHANGE-001 | `teamMaxSize` 4 → 5 | DOC-005, DOC-009, DOC-010 |
-| CHANGE-002 | Endpoint rename `POST /registrations` → `POST /register` | DOC-004, DOC-008 |
-| CHANGE-005 | Score range 0–10 → 0–20 (innovation + technical) | DOC-007, DOC-008 |
-| CHANGE-011 *(negative control)* | Rename `TeamService` → `TeamManagementService` (no API surface change) | **Zero pages** |
-
----
-
-## Tech Stack
-
-- **Framework:** Next.js 14 App Router + TypeScript strict
-- **Database:** PostgreSQL 16 + Prisma 5
-- **Auth:** Server-side sessions + argon2id
-- **Frontend:** TanStack Query v5 + shadcn/ui + Tailwind CSS
-- **Testing:** Vitest + Playwright + Schemathesis
-- **Docs sync:** Thally (Phase 4+)
-
----
-
-## Status
-
-- [x] PRD/SSOT v3.1 — Implementation Readiness: 100/100
-- [x] OpenAPI 3.1 spec — all 26 endpoints
-- [x] Architecture decisions — all approved (ARCH-001)
-- [ ] Thally spike (Phase 0 — human-gated)
-- [ ] Implementation (Phase 1+)
+1. **Trigger:** `push` event received via GitHub Webhook.
+2. **Fetch:** Get commit diff and existing markdown docs from GitHub.
+3. **Analyze:** Gemini determines if code invalidates docs.
+4. **Action:** If changed, open a PR with the updated markdown files (or directly commit based on settings).
