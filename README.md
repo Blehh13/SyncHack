@@ -1,42 +1,36 @@
-# SyncHack Core Engine
-## Track 1: Documentation Synchronization (SYNC HACK)
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-> **The Engine that keeps your docs in sync with your code.**
+## Getting Started
 
-SyncHack Core is a GitHub-integrated platform that acts like a CI/CD pipeline for documentation. You connect a repository, and whenever code is pushed to the default branch, the engine analyzes the changes using the Gemini AI. If the code invalidates any documentation, SyncHack Core automatically rewrites the affected markdown files and opens a Pull Request (or directly commits to the branch) so your docs are never out of date.
+First, run the development server:
 
----
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## What This Repo Contains
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-| Path | Purpose |
-|---|---|
-| `prd/synchack-core-prd-v1.0.md` | **Product Requirements Document** — product spec, user flows, and architecture for the Sync Engine. |
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
----
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Architecture Overview
+## Learn More
 
-- **Frontend & API:** Next.js 14 App Router
-- **Database:** PostgreSQL (Prisma)
-- **AI Integration:** Google Gemini API (Free Tier)
-- **GitHub Integration:** GitHub App for OAuth, Webhooks, and PR creation.
+To learn more about Next.js, take a look at the following resources:
 
-## Implementation Phases
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-| Phase | Name | Focus |
-|---|---|---|
-| 1 | Foundation | Next.js setup, Prisma schema, GitHub OAuth login |
-| 2 | Dashboard | Listing connected repositories and configuring project settings (PR vs Direct Commit) |
-| 3 | Webhooks & GitHub API | Webhook listener for `push` events, fetching diffs, and fetching doc context |
-| 4 | AI Pipeline | Prompting Gemini to analyze diffs and rewrite markdown |
-| 5 | Output | Committing files and creating Pull Requests via GitHub API |
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
+## Deploy on Vercel
 
-## Core Pipeline Flow
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-1. **Trigger:** `push` event received via GitHub Webhook.
-2. **Fetch:** Get commit diff and existing markdown docs from GitHub.
-3. **Analyze:** Gemini determines if code invalidates docs.
-4. **Action:** If changed, open a PR with the updated markdown files (or directly commit based on settings).
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

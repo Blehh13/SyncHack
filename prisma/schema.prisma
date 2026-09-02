@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String       @id @default(uuid())
+  githubId     String?      @unique
+  email        String?      @unique
+  name         String?
+  image        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  accounts     Account[]
+  sessions     Session[]
+  repositories Repository[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Repository {
+  id             String    @id @default(uuid())
+  githubRepoId   String    @unique
+  name           String
+  owner          String
+  installationId String
+  docsDirectory  String    @default("/docs")
+  updateMode     String    @default("PR")
+  isActive       Boolean   @default(true)
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  syncLogs       SyncLog[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model SyncLog {
+  id               String   @id @default(uuid())
+  repositoryId     String
+  githubDeliveryId String?  @unique
+  commitSha        String
+  status           String // PENDING, PROCESSING, SUCCESS, FAILED, NO_CHANGES
+  details          String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@index([commitSha])
+}
