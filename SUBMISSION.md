@@ -13,8 +13,18 @@ Track 1.
 - Repository: https://github.com/Blehh13/SyncHack
 - Pull request: https://github.com/Blehh13/SyncHack/pull/1 — took the project from "does not compile" to a clean build
 
+## 4b. Proof the pipeline works
+**https://github.com/Blehh13/synchack-demo/pull/1** — opened by SyncHack, unedited.
+
+Commit [`8a2be4d`](https://github.com/Blehh13/synchack-demo/commit/8a2be4d) raised the seat cap
+from 10 to 50, added a bulk discount tier, and added annual billing, leaving the README stating
+"at most 10 seats", "$12 per seat", "no discount tier". SyncHack detected all three
+contradictions and rewrote the section, including worked examples that compute correctly
+(20 seats x $9 = 180; 5 seats annual = 600).
+
 ## 5. Connected product repositories
-<!-- FILL: the repo the GitHub App was installed on for the demo -->
+https://github.com/Blehh13/synchack-demo — GitHub App `synchack-core-fwn5b` (App ID 4954911)
+installed on the account, installation `161955402`.
 
 ## 6. Demo video
 <!-- FILL: link, max 5 minutes -->

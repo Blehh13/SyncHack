@@ -59,7 +59,7 @@ npx inngest-cli@latest dev
 | `GITHUB_APP_PRIVATE_KEY` | App private key (PEM, newlines escaped as `\n`) |
 | `GITHUB_WEBHOOK_SECRET` | Shared secret for webhook signature verification |
 | `GEMINI_API_KEY` | Google AI Studio key |
-| `GEMINI_MODEL` | Optional; defaults to `gemini-2.5-flash` |
+| `GEMINI_MODEL` | Optional; defaults to `gemini-3.6-flash` |
 | `MOCK_GITHUB` | Set to `true` to exercise the pipeline without hitting GitHub |
 
 ### GitHub App setup

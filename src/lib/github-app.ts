@@ -22,6 +22,11 @@ function generateAppJWT(): string {
 export async function getInstallationToken(installationId: string): Promise<string | null> {
   if (process.env.MOCK_GITHUB === "true") return "mock-token"
 
+  // Local development escape hatch: run the pipeline against a personal access
+  // token when no GitHub App is configured. The App is still the right answer in
+  // production — a PAT carries the user's full account scope, not per-repo scope.
+  if (!GITHUB_APP_ID && process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN
+
   const appJwt = generateAppJWT()
   
   const res = await fetch(`https://api.github.com/app/installations/${installationId}/access_tokens`, {

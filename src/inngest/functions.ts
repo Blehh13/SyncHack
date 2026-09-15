@@ -6,7 +6,34 @@ import { DocumentationUpdateSchema } from "@/lib/schema"
 import { z } from "zod"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash"
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash"
+
+// Gemini returns 503 under load often enough that a single-model call makes the
+// pipeline flaky. Try the configured model first, then fall back in order.
+const MODEL_CHAIN = [GEMINI_MODEL, "gemini-3.6-flash", "gemini-3.5-flash"].filter(
+  (m, i, all) => all.indexOf(m) === i
+)
+
+async function generateWithFallback(
+  request: Omit<Parameters<typeof ai.models.generateContent>[0], "model">
+) {
+  let lastError: unknown
+  for (const model of MODEL_CHAIN) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        return await ai.models.generateContent({ ...request, model })
+      } catch (err) {
+        lastError = err
+        const transient = /(503|429|UNAVAILABLE|RESOURCE_EXHAUSTED)/.test(String(err))
+        if (!transient) throw err
+        if (attempt === 0) await new Promise((r) => setTimeout(r, 1500))
+      }
+    }
+    console.warn(`Gemini model ${model} unavailable, falling back`)
+  }
+  throw lastError
+}
+
 
 interface PushEventData {
   syncLogId: string
@@ -83,8 +110,7 @@ Return your analysis strictly matching the JSON schema provided.
 If no documentation changes are necessary based on this diff (e.g., minor typo fix in code, internal refactoring), return empty arrays for filesToUpdate and filesToCreate, and note that in the summary.`
 
 
-      const response = await ai.models.generateContent({
-        model: GEMINI_MODEL,
+      const response = await generateWithFallback({
         contents: prompt,
         config: {
             responseMimeType: "application/json",
@@ -132,8 +158,7 @@ ${currentContent}
 
 Return ONLY the completely updated markdown content. Do NOT use markdown code blocks like \`\`\`markdown, just return the raw text.`
         
-        const response = await ai.models.generateContent({
-            model: GEMINI_MODEL,
+        const response = await generateWithFallback({
             contents: prompt,
             config: { responseMimeType: "text/plain" }
         })
