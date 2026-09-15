@@ -162,3 +162,17 @@ export async function mergePullRequest(owner: string, repo: string, pullNumber: 
   });
   if (!res.ok) throw new Error(`Failed to merge PR: ${await res.text()}`);
 }
+
+/**
+ * Fetch the repository's default branch so PRs target the right base.
+ */
+export async function getDefaultBranch(owner: string, repo: string, token: string): Promise<string> {
+  if (process.env.MOCK_GITHUB === "true") return "main"
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!res.ok) throw new Error(`Failed to fetch repository: ${await res.text()}`);
+  const data = await res.json();
+  return data.default_branch || "main";
+}

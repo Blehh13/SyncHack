@@ -1,101 +1,72 @@
-import Image from "next/image";
+import { auth, signIn } from "@/auth"
+import { redirect } from "next/navigation"
+import { GitPullRequest, Webhook, Sparkles, GitMerge } from "lucide-react"
 
-export default function Home() {
+const steps = [
+  { icon: Webhook, title: "Push event", body: "A GitHub App webhook fires on every push to a connected repository." },
+  { icon: Sparkles, title: "Analyse", body: "Gemini reads the commit diff against the repo tree and decides which docs went stale." },
+  { icon: GitPullRequest, title: "Rewrite", body: "Each affected markdown file is regenerated in full, not patched blindly." },
+  { icon: GitMerge, title: "Open a PR", body: "Changes land on a branch and open a pull request — or merge directly, your call." },
+]
+
+export default async function Home() {
+  const session = await auth()
+  if (session?.user) redirect("/dashboard")
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <header className="border-b border-zinc-800">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <span className="font-bold tracking-tight">SyncHack Core</span>
+          <a href="https://github.com/Blehh13/SyncHack" className="text-sm text-zinc-400 hover:text-white transition-colors">
+            GitHub
           </a>
         </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-6">
+        <section className="py-20 sm:py-28">
+          <p className="text-sm font-medium text-emerald-400 mb-4">CI/CD for documentation</p>
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight max-w-2xl text-balance">
+            Your docs go stale the moment you push. This fixes them before you notice.
+          </h1>
+          <p className="mt-6 text-lg text-zinc-400 max-w-xl">
+            SyncHack watches your repository, reads every commit diff, and opens a pull request
+            rewriting the markdown that the change invalidated. No triggering, no context switching.
+          </p>
+
+          <form
+            action={async () => {
+              "use server"
+              await signIn("github", { redirectTo: "/dashboard" })
+            }}
+            className="mt-10"
+          >
+            <button
+              type="submit"
+              className="rounded-lg bg-white text-zinc-950 font-medium px-5 py-3 text-sm hover:bg-zinc-200 transition-colors"
+            >
+              Continue with GitHub
+            </button>
+          </form>
+        </section>
+
+        <section className="pb-24 grid gap-px bg-zinc-800 sm:grid-cols-2 rounded-xl overflow-hidden border border-zinc-800">
+          {steps.map(({ icon: Icon, title, body }) => (
+            <div key={title} className="bg-zinc-950 p-6">
+              <Icon className="size-5 text-emerald-400" aria-hidden />
+              <h2 className="mt-3 font-semibold">{title}</h2>
+              <p className="mt-1.5 text-sm text-zinc-400 leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="border-t border-zinc-800">
+        <div className="max-w-5xl mx-auto px-6 py-6 text-sm text-zinc-500">
+          Built for SyncHack — Track 1.
+        </div>
       </footer>
     </div>
-  );
+  )
 }

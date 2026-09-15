@@ -1,17 +1,48 @@
 import { inngest } from "./client"
 import prisma from "@/lib/prisma"
-import { getInstallationToken, getCommitDiff, getRepositoryTree, getFileContent, createBranch, commitFiles, createPullRequest, mergePullRequest } from "@/lib/github-app"
+import { getInstallationToken, getCommitDiff, getRepositoryTree, getFileContent, createBranch, commitFiles, createPullRequest, mergePullRequest, getDefaultBranch } from "@/lib/github-app"
 import { GoogleGenAI } from "@google/genai"
 import { DocumentationUpdateSchema } from "@/lib/schema"
-import { zodToJsonSchema } from "zod-to-json-schema"
+import { z } from "zod"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash"
+
+interface PushEventData {
+  syncLogId: string
+  githubRepoId: string
+  commitSha: string
+  installationId: string
+  owner: string
+  repoName: string
+}
+
+/**
+ * Gemini accepts an OpenAPI-flavoured subset of JSON Schema, so strip the
+ * bookkeeping keys Zod emits that it rejects.
+ */
+function buildResponseSchema() {
+  const schema = z.toJSONSchema(DocumentationUpdateSchema, { io: "output" })
+  const strip = (node: unknown): unknown => {
+    if (Array.isArray(node)) return node.map(strip)
+    if (node && typeof node === "object") {
+      return Object.fromEntries(
+        Object.entries(node as Record<string, unknown>)
+          .filter(([k]) => k !== "$schema" && k !== "additionalProperties")
+          .map(([k, v]) => [k, strip(v)])
+      )
+    }
+    return node
+  }
+  return strip(schema) as Record<string, unknown>
+}
+
 
 export const processPushEvent = inngest.createFunction(
-  { id: "process-push-event" },
-  { event: "github/push" },
+  { id: "process-push-event", triggers: [{ event: "github/push" }] },
   async ({ event, step }) => {
-    const { syncLogId, githubRepoId, commitSha, installationId, owner, repoName } = event.data
+    const { syncLogId, githubRepoId, commitSha, installationId, owner, repoName } =
+      event.data as PushEventData
 
     // 1. Update status to PROCESSING
     await step.run("update-status-processing", async () => {
@@ -52,15 +83,12 @@ Return your analysis strictly matching the JSON schema provided.
 If no documentation changes are necessary based on this diff (e.g., minor typo fix in code, internal refactoring), return empty arrays for filesToUpdate and filesToCreate, and note that in the summary.`
 
 
-      const jsonSchema = zodToJsonSchema(DocumentationUpdateSchema, "DocumentationUpdate")
-      
       const response = await ai.models.generateContent({
-        model: "gemini-1.5-pro",
+        model: GEMINI_MODEL,
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            // @ts-expect-error: SDK accepts JSON Schema objects
-            responseSchema: jsonSchema.definitions?.DocumentationUpdate || jsonSchema,
+            responseSchema: buildResponseSchema(),
         }
       })
 
@@ -105,7 +133,7 @@ ${currentContent}
 Return ONLY the completely updated markdown content. Do NOT use markdown code blocks like \`\`\`markdown, just return the raw text.`
         
         const response = await ai.models.generateContent({
-            model: "gemini-1.5-pro",
+            model: GEMINI_MODEL,
             contents: prompt,
             config: { responseMimeType: "text/plain" }
         })
@@ -135,12 +163,11 @@ Return ONLY the completely updated markdown content. Do NOT use markdown code bl
       const commitMessage = "docs: auto-updated documentation by SyncHack"
       await commitFiles(owner, repoName, branchName, commitSha, filesToCommit, commitMessage, token)
       
-      // Create a PR back to the default branch (usually main or master, assuming main here for simplicity, 
-      // but in a real app we'd fetch the default branch from the repo API)
+      const baseBranch = await getDefaultBranch(owner, repoName, token)
       const prTitle = `SyncHack: Documentation Updates`
       const prBody = `Automated documentation updates based on recent code changes.\n\n${analysis.summary}`
       
-      const pr = await createPullRequest(owner, repoName, prTitle, prBody, branchName, "main", token)
+      const pr = await createPullRequest(owner, repoName, prTitle, prBody, branchName, baseBranch, token)
       
       if (updateMode === "DIRECT") {
           await mergePullRequest(owner, repoName, pr.number, token)
