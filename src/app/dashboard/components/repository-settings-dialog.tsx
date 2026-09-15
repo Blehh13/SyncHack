@@ -75,6 +75,9 @@ export function RepositorySettingsDialog({ repo, dbRepo, isOpen, onOpenChange }:
               className="col-span-3 bg-zinc-900 border-zinc-800"
               placeholder="/docs"
             />
+            <p className="col-span-3 col-start-2 text-xs text-zinc-500">
+              SyncHack only reads and edits documentation inside this folder. Use <code>/</code> for the whole repository.
+            </p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="updateMode" className="text-right">

@@ -16,7 +16,7 @@ push → webhook → Inngest job → Gemini analysis → markdown rewrite → br
 
 1. **Webhook.** A GitHub App fires a `push` event at `/api/webhooks/github`. The payload signature is verified with HMAC-SHA256 before anything else happens.
 2. **Queue.** The request creates a `SyncLog` row and hands off to Inngest immediately, so GitHub gets a fast 200 and the slow work runs durably in the background.
-3. **Analysis.** The job fetches the commit diff and the repository file tree, then asks Gemini — constrained to a Zod-derived JSON schema — which docs need updating and *why*.
+3. **Analysis.** The job fetches the commit diff and the files inside the repository's docs path, then asks Gemini — constrained to a Zod-derived JSON schema — which docs need updating and *why*. Any proposed file outside the docs path is dropped and recorded as skipped.
 4. **Rewrite.** Each affected file is fetched and regenerated in full against that instruction, rather than patched blindly.
 5. **Ship.** Changes are committed to a `synchack/docs-update-*` branch and opened as a PR against the repository's actual default branch. In `DIRECT` mode the PR is squash-merged automatically.
 
@@ -80,6 +80,5 @@ Built during the SyncHack hackathon (Track 1). The pipeline is implemented end t
 
 ### Known limitations
 
-- `docsDirectory` is stored and surfaced in the UI but does not yet scope the analysis — Gemini currently sees the whole repository tree.
 - No retry or backoff strategy beyond Inngest's defaults.
 - Very large diffs are sent to the model unsummarised and can exceed the context window.
