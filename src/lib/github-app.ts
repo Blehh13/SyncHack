@@ -22,6 +22,11 @@ function generateAppJWT(): string {
 export async function getInstallationToken(installationId: string): Promise<string | null> {
   if (process.env.MOCK_GITHUB === "true") return "mock-token"
 
+  // Local development escape hatch: run the pipeline against a personal access
+  // token when no GitHub App is configured. The App is still the right answer in
+  // production — a PAT carries the user's full account scope, not per-repo scope.
+  if (!GITHUB_APP_ID && process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN
+
   const appJwt = generateAppJWT()
   
   const res = await fetch(`https://api.github.com/app/installations/${installationId}/access_tokens`, {
@@ -161,4 +166,18 @@ export async function mergePullRequest(owner: string, repo: string, pullNumber: 
     body: JSON.stringify({ merge_method: 'squash' })
   });
   if (!res.ok) throw new Error(`Failed to merge PR: ${await res.text()}`);
+}
+
+/**
+ * Fetch the repository's default branch so PRs target the right base.
+ */
+export async function getDefaultBranch(owner: string, repo: string, token: string): Promise<string> {
+  if (process.env.MOCK_GITHUB === "true") return "main"
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!res.ok) throw new Error(`Failed to fetch repository: ${await res.text()}`);
+  const data = await res.json();
+  return data.default_branch || "main";
 }
