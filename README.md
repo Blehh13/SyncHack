@@ -48,6 +48,8 @@ In a second terminal, run the Inngest dev server so background jobs execute:
 npx inngest-cli@latest dev
 ```
 
+Run the unit tests with `npm test`.
+
 ### Environment
 
 | Variable | What it's for |
