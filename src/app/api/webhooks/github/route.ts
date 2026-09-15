@@ -9,7 +9,12 @@ function verifySignature(payload: string, signature: string | null) {
   if (!signature) return false
   const hmac = crypto.createHmac("sha256", WEBHOOK_SECRET)
   const digest = "sha256=" + hmac.update(payload).digest("hex")
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest))
+  const received = Buffer.from(signature)
+  const expected = Buffer.from(digest)
+  // timingSafeEqual throws on a length mismatch, which a malformed header
+  // would otherwise turn into a 500 instead of a clean 401.
+  if (received.length !== expected.length) return false
+  return crypto.timingSafeEqual(received, expected)
 }
 
 export async function POST(req: NextRequest) {
