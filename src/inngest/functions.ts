@@ -2,7 +2,8 @@ import { inngest } from "./client"
 import prisma from "@/lib/prisma"
 import { getInstallationToken, getCommitDiff, getRepositoryTree, getFileContent, createBranch, commitFiles, createPullRequest, mergePullRequest, getDefaultBranch } from "@/lib/github-app"
 import { GoogleGenAI } from "@google/genai"
-import { DocumentationUpdateSchema } from "@/lib/schema"
+import { DocumentationUpdateSchema, type DocumentationUpdate } from "@/lib/schema"
+import { filterTree, normalizeDocsDirectory, scopeAnalysis } from "@/lib/docs-scope"
 import { z } from "zod"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -79,6 +80,14 @@ export const processPushEvent = inngest.createFunction(
       })
     })
 
+    const settings = await step.run("load-repository-settings", async () => {
+      const repo = await prisma.repository.findUnique({ where: { githubRepoId } })
+      return { docsDirectory: repo?.docsDirectory ?? "/docs", updateMode: repo?.updateMode || "PR" }
+    })
+    // "" means the whole repository (a docs path of "/")
+    const docsDir = normalizeDocsDirectory(settings.docsDirectory)
+    const docsDirLabel = docsDir === "" ? "the repository root" : `${docsDir}/`
+
     // 2. Get GitHub App Token
     const token = await step.run("get-github-token", async () => {
       const t = await getInstallationToken(installationId)
@@ -94,19 +103,25 @@ export const processPushEvent = inngest.createFunction(
     const tree = await step.run("fetch-repo-tree", async () => {
       return await getRepositoryTree(owner, repoName, commitSha, token)
     })
-    
-    // 4. Analyze Diff with Gemini 1.5 Pro using Structured Outputs
-    const analysis = await step.run("analyze-diff-with-gemini", async () => {
+
+    // Only files inside the docs directory are candidates for an update.
+    const docsTree = filterTree(tree, docsDir)
+
+    // 4. Analyze Diff with Gemini using Structured Outputs
+    const rawAnalysis: DocumentationUpdate = await step.run("analyze-diff-with-gemini", async () => {
       const prompt = `You are an expert technical writer and AI assistant.
 Your task is to analyze a code diff and determine how the project's documentation should be updated.
 
-Repository Tree (Context):
-${tree}
+The documentation lives in ${docsDirLabel}. Only update or create files inside it.${docsDir === "" ? "" : `
+Every path you return must start with "${docsDir}/".`}
+
+Documentation files:
+${docsTree || "(none yet)"}
 
 Code Diff:
 ${diff}
 
-Return your analysis strictly matching the JSON schema provided. 
+Return your analysis strictly matching the JSON schema provided.
 If no documentation changes are necessary based on this diff (e.g., minor typo fix in code, internal refactoring), return empty arrays for filesToUpdate and filesToCreate, and note that in the summary.`
 
 
@@ -125,15 +140,21 @@ If no documentation changes are necessary based on this diff (e.g., minor typo f
     })
 
 
+    // Enforce the docs directory: drop anything the model proposed outside it.
+    const { analysis, skippedPaths } = scopeAnalysis(rawAnalysis, docsDir)
+
     // 5. If no changes are needed, complete early
     if (analysis.filesToUpdate.length === 0 && analysis.filesToCreate.length === 0) {
       await step.run("update-status-no-changes", async () => {
         await prisma.syncLog.update({
           where: { id: syncLogId },
-          data: { status: "NO_CHANGES", details: JSON.stringify(analysis, null, 2) }
+          data: {
+            status: "NO_CHANGES",
+            details: JSON.stringify({ ...analysis, docsDirectory: settings.docsDirectory, skippedPaths }, null, 2)
+          }
         })
       })
-      return { success: true, analysis }
+      return { success: true, analysis, skippedPaths }
     }
 
     // 6. Generate Actual Content for Updated Files
@@ -175,8 +196,7 @@ Return ONLY the completely updated markdown content. Do NOT use markdown code bl
 
     // 7. Commit changes to GitHub
     await step.run("commit-to-github", async () => {
-      const repo = await prisma.repository.findUnique({ where: { githubRepoId } })
-      const updateMode = repo?.updateMode || "PR"
+      const updateMode = settings.updateMode
 
       // We branch off the commit that triggered the webhook
       const branchName = `synchack/docs-update-${commitSha.substring(0, 7)}-${Date.now()}`
@@ -202,12 +222,18 @@ Return ONLY the completely updated markdown content. Do NOT use markdown code bl
         where: { id: syncLogId },
         data: { 
           status: "SUCCESS",
-          details: JSON.stringify({ prUrl: pr.url, merged: updateMode === "DIRECT", analysis }, null, 2)
+          details: JSON.stringify({
+            prUrl: pr.url,
+            merged: updateMode === "DIRECT",
+            docsDirectory: settings.docsDirectory,
+            skippedPaths,
+            analysis
+          }, null, 2)
         }
       })
     })
 
-    return { success: true, analysis }
+    return { success: true, analysis, skippedPaths }
   }
 )
 
