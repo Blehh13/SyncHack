@@ -88,7 +88,7 @@ The OAuth credentials must come from the **GitHub App**, not a standalone OAuth 
 
 ## Data model
 
-`User` → `Repository` → `SyncLog`. Each repository carries its own `docsDirectory` and an `updateMode` of `PR` or `DIRECT`. Every webhook delivery produces a `SyncLog` row that moves through `PENDING → PROCESSING → SUCCESS | NO_CHANGES | FAILED`, keeping the full analysis JSON for inspection.
+`User` → `Repository` → `SyncLog`. Each repository carries its own `docsDirectory` and an `updateMode` of `PR` or `DIRECT`. Every webhook delivery produces a `SyncLog` row that moves through `PENDING → PROCESSING → SUCCESS | NO_CHANGES`, keeping the full analysis JSON for inspection. `FAILED` exists in the schema but nothing writes it yet: a run whose job fails stays at `PROCESSING`, and the error is only visible in Inngest.
 
 ## Project status
 
