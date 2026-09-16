@@ -1,0 +1,31 @@
+# npm run verify:docs
+# Captured: 2026-09-16T06:00:20Z against https://synchack.thally.app
+# Product master: 3be77c3
+
+PASS  /reference/pull-request-format  documents "synchack/docs-update-"
+PASS  /reference/pull-request-format  documents "docs: auto-updated documentation by SyncHack"
+PASS  /reference/pull-request-format  documents "SyncHack: Documentation Updates"
+PASS  /reference/pull-request-format  documents "squash-merge"
+PASS  /reference/repository-settings  documents "`/docs`"
+PASS  /reference/environment-variables  documents "GEMINI_MODEL"
+PASS  /concepts/how-it-works  documents "gemini-3.5-flash"
+PASS  /troubleshooting  documents "Repository not configured or inactive"
+FAIL  /known-limitations  still publishes "The docs path does not limit the analysis", which the code contradicts
+      source of truth: src/inngest/functions.ts (filterTree/scopeAnalysis)
+FAIL  /reference/repository-settings  still publishes "a sync run does not read it", which the code contradicts
+      source of truth: src/inngest/functions.ts
+FAIL  /concepts/how-it-works  still publishes "Gemini sees the full repository tree", which the code contradicts
+      source of truth: src/inngest/functions.ts
+FAIL  /concepts/sync-run-statuses  still publishes "no code path sets it today", which the code contradicts
+      source of truth: src/inngest/functions.ts (onFailure)
+FAIL  /concepts/sync-run-statuses  still publishes "its `SyncLog` stays at `PROCESSING`", which the code contradicts
+      source of truth: src/inngest/functions.ts (onFailure)
+FAIL  /troubleshooting  still publishes "SyncHack does not write `FAILED` to the `SyncLog` yet", which the code contradicts
+      source of truth: src/inngest/functions.ts (onFailure)
+FAIL  /known-limitations  still publishes "Failed runs are not marked `FAILED`", which the code contradicts
+      source of truth: src/inngest/functions.ts (onFailure)
+
+8/15 documentation claims match the code (https://synchack.thally.app).
+7 stale claim(s). See evidence/05-drift-still-live-after-merge.md.
+
+# exit code: 1 (stale claims present)

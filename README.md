@@ -64,6 +64,13 @@ npx inngest-cli@latest dev
 
 Run the unit tests with `npm test`.
 
+Check the published documentation against this code with `npm run verify:docs`. It
+fetches each page's Markdown from the live site and compares 15 documented claims
+with the source that implements them. It currently exits non-zero: the docs are
+stale because Thally Track's run on the change that made them stale did not
+complete, and we did not hand-write that update. See
+[`evidence/07-docs-claim-check.txt`](evidence/07-docs-claim-check.txt).
+
 ### Environment
 
 | Variable | What it's for |
