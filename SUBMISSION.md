@@ -62,7 +62,7 @@ SyncHack#3 added only a CI workflow. It changes nothing a user sees. Track analy
 ### What did you accomplish?
 We built **SyncHack Core**, a GitHub App that reads each pushed commit with Gemini and opens a pull request that fixes the documentation the commit made stale. A webhook with HMAC verification records a `SyncLog` and hands off to an Inngest job. The job asks Gemini, constrained to a JSON schema, which files are stale, rewrites them, and opens a PR against the real default branch. When nothing needs to change, it records `NO_CHANGES` instead of opening a noisy PR.
 
-Its documentation is a Thally site with 14 pages: quickstart, concepts, guides, reference, troubleshooting, known limitations, changelog and an OpenAPI reference. Every page was written by reading the source code, not the README. That is why the docs honestly listed the product's gaps, including the one we then fixed.
+Its documentation is a Thally site with 16 pages: quickstart, concepts, guides, reference, troubleshooting, known limitations, changelog and an OpenAPI reference. Every page was written by reading the source code, not the README. That is why the docs honestly listed the product's gaps, including the one we then fixed.
 
 The product change, SyncHack#2, closes a real safety gap. A setting labeled "Docs Path" did nothing, and a language model could propose rewriting any file in the repository. Now the model only sees and edits files inside the docs path, anything it proposes outside is dropped and recorded as `skippedPaths`, and 21 unit tests cover path normalization, prefix collisions and path traversal.
 
