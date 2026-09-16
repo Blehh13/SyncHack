@@ -1,0 +1,129 @@
+THALLY TRACK RUN LIST — SyncHack (site ID: 4ea90048-87b7-4638-9d84-0d098cb7ab2d)
+Track: Documentation updates (blehh13/SyncHack → blehh13/synchack-docs)
+Retrieved: 2026-09-17
+================================================================================
+
+NOTE ON DASHBOARD ACCESS (corrected 2026-09-17 after verification)
+The browser agent that produced this file could not reach the Thally dashboard
+during its session and attributed that to a DNS failure on a Neon auth host.
+That attribution was NOT reproducible: on re-check, app.thally.io returned HTTP
+307 (redirect to sign-in) and the Neon hostname resolved normally. The cause of
+the agent's failure is unknown, so no outage is claimed here. Everything below
+comes from the GitHub API, from local evidence files, or from dashboard
+screenshots taken on 2026-09-15 (evidence/screenshots/).
+
+DASHBOARD FACTS OBSERVED ON 2026-09-15 (evidence/screenshots/05-track-runs-2-failed-3-no-update-needed.png)
+  PR #2: "Needs attention" — "Track stopped because a service step did not
+         recover automatically · Track service · Stopped while writing the
+         update", Attempt 1 of 3, 1.6K credits used,
+         reference 1eead82e-1e15-42ce-9fa0-a71a8b6e9947
+  PR #3: "No update needed" — "Track checked this product change and found that
+         the documentation is already up to date", 413.3 credits used
+  Runs for PRs #4-#7 were merged after those screenshots and have not been
+  observed in the dashboard.
+
+
+NOTE ON DATA SOURCE
+The Thally Cloud dashboard (app.thally.io) is unreachable due to a DNS failure
+Run list, reference IDs and credits were recovered via GitHub API and local
+evidence files already committed to the repository.
+
+================================================================================
+RUNS — blehh13/SyncHack (product repo, triggers Track)
+================================================================================
+
+--- PR #1 ---
+Title:       fix: make the project build, and replace placeholder UI
+Merged at:   2026-09-15T16:07:49Z
+URL:         https://github.com/Blehh13/SyncHack/pull/1
+Track status: NOT RETRIEVED (not observed in dashboard)
+Reference ID: NOT RETRIEVED
+Credits used: NOT RETRIEVED
+Notes:       No Thally comment posted on this PR.
+
+--- PR #2 ---
+Title:       feat: scope sync runs to the repository's docs path
+Merged at:   2026-09-15T17:27:10Z
+URL:         https://github.com/Blehh13/SyncHack/pull/2
+Track status: FAILED ("Needs attention", observed in dashboard 2026-09-15)
+Reference ID: 1eead82e-1e15-42ce-9fa0-a71a8b6e9947
+Credits used: 1.6K
+Failure category: Track service - Stopped while writing the update (Attempt 1 of 3)
+Notes:
+  - Pre-merge impact map hash committed by Blehh13 at 2026-09-15T17:26:53Z:
+    8ee9ee2d...  02-IMPACT_MAP.md
+    dd35189f...  03-FEATURE_DECISION.md
+  - Track run failed with ref 1eead82e-1e15-42ce-9fa0-a71a8b6e9947 while
+    writing the documentation update (see evidence/05-drift-still-live-after-merge.md)
+  - 7 of 15 checked claims were still stale on 2026-09-16 (07-docs-claim-check.txt);
+    6 of them are quoted verbatim in 05-drift-still-live-after-merge.md
+
+--- PR #3 ---
+Title:       ci: run type-check and unit tests on pull requests
+Merged at:   2026-09-15T17:42:19Z
+URL:         https://github.com/Blehh13/SyncHack/pull/3
+Track status: NO UPDATE NEEDED (observed in dashboard 2026-09-15)
+Reference ID: not shown for successful runs
+Credits used: 413.3
+Notes:       Correct outcome: the change adds a CI workflow only.
+             Screenshot: evidence/screenshots/05-track-runs-2-failed-3-no-update-needed.png
+
+--- PR #4 ---
+Title:       fix: GitHub sign-in failing with a 500
+Merged at:   2026-09-16T05:46:04Z
+URL:         https://github.com/Blehh13/SyncHack/pull/4
+Track status: NOT RETRIEVED (not observed in dashboard)
+Reference ID: NOT RETRIEVED
+Credits used: NOT RETRIEVED
+Notes:       No Thally comment posted on PR. No doc PR observed on synchack-docs.
+
+--- PR #5 ---
+Title:       feat: record failed runs as FAILED instead of leaving them PROCESSING
+Merged at:   2026-09-16T05:56:17Z
+URL:         https://github.com/Blehh13/SyncHack/pull/5
+Track status: NOT RETRIEVED (not observed in dashboard)
+Reference ID: NOT RETRIEVED
+Credits used: NOT RETRIEVED
+Notes:
+  - Pre-merge impact map hash committed by Blehh13 at 2026-09-16T05:55:01Z:
+    4344a7dd...  evidence/06-IMPACT_MAP-2.md
+  - Thally Track CLI dry-run captured in evidence/08-thally-track-cli-dryrun.txt:
+    Files matched: 3 of 4
+    Task instruction built: "A pull request merged in Blehh13/SyncHack (#5). Review
+    it and decide what user-facing behavior it changes (API surface, config, CLI,
+    defaults, behavior). Then find the documentation pages that describe that behavior
+    and update them so the docs match..."
+  - No doc PR observed on synchack-docs. ANTHROPIC_API_KEY not set → agent did not
+    draft edits during dry run.
+
+--- PR #6 ---
+Title:       feat: verify published documentation claims against the code
+Merged at:   2026-09-16T06:02:16Z
+URL:         https://github.com/Blehh13/SyncHack/pull/6
+Track status: NOT RETRIEVED (not observed in dashboard)
+Reference ID: NOT RETRIEVED
+Credits used: NOT RETRIEVED
+Notes:
+  - PR body references: "Track's run on #2 stopped while writing the update
+    (1eead82e-1e15-42ce-9fa0-a71a8b6e9947)"
+  - 8/15 documentation claims match code; 7 stale claims still in published docs
+    as of 2026-09-16T06:00:20Z (see evidence/07-docs-claim-check.txt)
+
+================================================================================
+DOCUMENTATION PULL REQUESTS (blehh13/synchack-docs)
+================================================================================
+
+*** NO DOC PR WAS CREATED BY THALLY TRACK ***
+
+The only PRs on blehh13/synchack-docs were opened by Blehh13 (human):
+  - PR #1: docs: replace starter template with SyncHack Core documentation
+           MERGED 2026-09-15T17:00:28Z
+           https://github.com/Blehh13/synchack-docs/pull/1
+  - PR #2: test: probe Thally preview build (do not merge)
+           CLOSED (not merged)
+           https://github.com/Blehh13/synchack-docs/pull/2
+
+Thally's GitHub App (thally-labs) posted preview deployment comments on both
+of these PRs but did NOT open any documentation update PR on synchack-docs.
+
+================================================================================

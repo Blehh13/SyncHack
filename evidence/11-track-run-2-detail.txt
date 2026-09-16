@@ -1,0 +1,124 @@
+THALLY TRACK RUN DETAIL — PR #2 (blehh13/synchack)
+Reference ID: 1eead82e-1e15-42ce-9fa0-a71a8b6e9947
+Data source: GitHub API + local evidence files (not observed in dashboard)
+Retrieved: 2026-09-17
+================================================================================
+
+NOTE ON DASHBOARD ACCESS (corrected 2026-09-17 after verification)
+The browser agent that produced this file could not reach the Thally dashboard
+during its session and attributed that to a DNS failure on a Neon auth host.
+That attribution was NOT reproducible: on re-check, app.thally.io returned HTTP
+307 (redirect to sign-in) and the Neon hostname resolved normally. The cause of
+the agent's failure is unknown, so no outage is claimed here. Everything below
+comes from the GitHub API, from local evidence files, or from dashboard
+screenshots taken on 2026-09-15 (evidence/screenshots/).
+
+
+NOTE: The Thally dashboard run detail page could not be accessed due to a DNS
+comments, PR bodies, and evidence files committed to the repository.
+
+================================================================================
+THE PR THAT TRIGGERED THIS RUN
+================================================================================
+
+PR:          blehh13/SyncHack #2
+Title:       feat: scope sync runs to the repository's docs path
+Merged at:   2026-09-15T17:27:10Z
+URL:         https://github.com/Blehh13/SyncHack/pull/2
+
+PR body summary:
+  - docsDirectory now controls what SyncHack reads and edits
+  - Before this PR: sync run ignored docsDirectory; Gemini saw the entire repo
+  - After this PR: sync run sends Gemini only the file tree inside the docs path
+  - Any proposed update outside the docs path is dropped (logged as skippedPaths)
+  - docsDirectory and skippedPaths stored in SyncLog details for SUCCESS and NO_CHANGES
+  - docs path of "/" keeps previous whole-repository behavior
+  - Settings dialog updated
+
+Implementation files changed:
+  - src/lib/docs-scope.ts (new): normalizeDocsDirectory, isInDocsDirectory, filterTree, scopeAnalysis
+  - src/inngest/functions.ts: new load-repository-settings step, scoped tree, enforcement
+  - README: "does not yet scope the analysis" limitation removed
+
+================================================================================
+AFFECTED DOCUMENTATION PAGES (pre-merge human analysis, evidence/02-IMPACT_MAP.md)
+SHA-256 committed before Track ran: 8ee9ee2d6d85cda48f60644e8774e6a4f59a1b3735ef7a57a642acd1bf82b0a0
+================================================================================
+
+From evidence/05-drift-still-live-after-merge.md (confirmed stale claims
+after Track failed — these are the pages Track was supposed to update):
+
+1. /known-limitations
+   Stale text: "The docs path does not limit the analysis. docsDirectory is
+   stored and shown in the dashboard, but a sync run does not read it."
+   Source of truth: src/inngest/functions.ts (filterTree/scopeAnalysis)
+
+2. /reference/repository-settings
+   Stale text: "a sync run does not read it" (for docsDirectory column)
+   Source of truth: src/inngest/functions.ts
+
+3. /guides/configure-a-repository
+   Stale text: "SyncHack stores and displays this value, but a sync run does
+   not use it yet."
+
+4. /concepts/how-it-works
+   Stale text: "Gemini sees the full repository tree. The repository's
+   docsDirectory setting is not used to narrow it, so any file in the
+   repository can be chosen for an update."
+   Source of truth: src/inngest/functions.ts
+
+5. /troubleshooting
+   Stale text: "This is expected today. The Docs Path setting does not limit
+   which files..."
+
+6. openapi.yaml
+   Stale text: "but not yet used to scope sync runs."
+
+Evidence cross-check from 07-docs-claim-check.txt (captured 2026-09-16T06:00:20Z):
+  FAIL /known-limitations   — "The docs path does not limit the analysis"
+  FAIL /reference/repository-settings — "a sync run does not read it"
+  FAIL /concepts/how-it-works — "Gemini sees the full repository tree"
+  FAIL /concepts/sync-run-statuses — "no code path sets it today" (re: FAILED)
+  FAIL /concepts/sync-run-statuses — "its SyncLog stays at PROCESSING"
+  FAIL /troubleshooting — "SyncHack does not write FAILED to the SyncLog yet"
+  FAIL /known-limitations — "Failed runs are not marked FAILED"
+  Result: 8/15 documentation claims match the code; 7 stale claims.
+  (Last 4 FAILs are from PR #5, not PR #2, but both were unresolved.)
+
+================================================================================
+TASK INSTRUCTION TRACK BUILT (from evidence/08-thally-track-cli-dryrun.txt, PR #5 dry-run)
+================================================================================
+
+The CLI dry-run for PR #5 captured the exact task instruction format Track uses.
+The instruction for PR #2 would have been equivalent:
+
+  "A pull request merged in Blehh13/SyncHack (#2). Review it and decide what
+  user-facing behavior it changes (API surface, config, CLI, defaults, behavior).
+  Then find the documentation pages that describe that behavior and update them
+  so the docs match — editing existing pages in place where they already cover
+  it. Make no change if the PR has no user-facing impact."
+
+Context provided to the agent:
+  - Full PR body (merged PR #2)
+  - Files matched: those tracked by docs.json (src/**, prisma/**, scripts/**)
+  - For PR #5 dry-run: 3 of 4 files matched
+
+================================================================================
+FULL ERROR TEXT
+================================================================================
+
+NOT RETRIEVED — the Thally dashboard run detail page (which shows the
+
+Known from the repo: Track run 1eead82e-1e15-42ce-9fa0-a71a8b6e9947 "stopped
+while writing the update" (exact quote from evidence/07-docs-claim-check.txt
+via PR #6 body: "Track's run on #2 stopped while writing the update
+(1eead82e-1e15-42ce-9fa0-a71a8b6e9947), and we did not hand-write that update
+and attribute it to Track, so the stale text is still published.")
+
+================================================================================
+STEP-BY-STEP LOG
+================================================================================
+
+NOT RETRIEVED — Thally dashboard inaccessible.
+
+================================================================================

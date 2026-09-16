@@ -53,3 +53,21 @@ dd35189f94ea44e3c3b26b9fdde15d740e7cd4ce2352773f64c8e22d9e0d9c95  03-FEATURE_DEC
 | SyncHack#3 (CI workflow only) | No user-visible change, so no docs update | "No update needed" | **Correct** |
 
 If Thally resolves reference `1eead82e-1e15-42ce-9fa0-a71a8b6e9947` and #2 produces a documentation PR, its proposals will be scored row by row against `02-IMPACT_MAP.md` and reviewed as accept, edit or reject before merge.
+
+## Later evidence (added 2026-09-17)
+
+| File | What it is |
+|---|---|
+| `06-IMPACT_MAP-2.md` | Prediction for the second product change (#5), hashed on the PR before merging |
+| `07-docs-claim-check.txt` | `npm run verify:docs` output: 8 of 15 published claims match the code |
+| `08-thally-track-cli-dryrun.txt` | `thally track test --pr 5`: the task and context Thally's CLI builds |
+| `10`–`14` | Run list, run detail, retry check, preview-error notes, and summary, gathered by a browser agent from the GitHub API and local files |
+
+**Provenance warning for files 10–14.** These were produced by a browser agent
+that did not reach the Thally dashboard. Two of its claims were corrected on
+2026-09-17 after verification: an unreproducible vendor-outage attribution, and
+a statement that the failed run had identified the affected pages. Nothing
+produced by Track itself was recovered for run
+`1eead82e-1e15-42ce-9fa0-a71a8b6e9947`; the page lists in those files are our
+own analysis. Dashboard facts come only from the screenshots taken on
+2026-09-15.

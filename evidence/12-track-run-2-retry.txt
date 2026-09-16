@@ -1,0 +1,28 @@
+THALLY TRACK RUN RETRY CHECK — PR #2 (ref: 1eead82e-1e15-42ce-9fa0-a71a8b6e9947)
+Retrieved: 2026-09-17
+================================================================================
+
+no retry control found
+
+REASON: The Thally dashboard run detail page was not accessible due to a DNS
+The page where a Retry/Re-run button would appear could not be loaded, so the
+presence or absence of a retry control cannot be confirmed from the UI.
+
+Additionally, Thally's public documentation and GitHub comments (from
+thally-labs bot) do not reference any CLI or API mechanism to retry a
+specific Track run by reference ID.
+
+ACTION REQUIRED: Once the Thally dashboard is accessible, navigate to:
+  https://app.thally.io/sites/4ea90048-87b7-4638-9d84-0d098cb7ab2d/track
+Open run 1eead82e-1e15-42ce-9fa0-a71a8b6e9947 and check for a Retry control.
+================================================================================
+
+NOTE ON DASHBOARD ACCESS (corrected 2026-09-17 after verification)
+The browser agent that produced this file could not reach the Thally dashboard
+during its session and attributed that to a DNS failure on a Neon auth host.
+That attribution was NOT reproducible: on re-check, app.thally.io returned HTTP
+307 (redirect to sign-in) and the Neon hostname resolved normally. The cause of
+the agent's failure is unknown, so no outage is claimed here. Everything below
+comes from the GitHub API, from local evidence files, or from dashboard
+screenshots taken on 2026-09-15 (evidence/screenshots/).
+

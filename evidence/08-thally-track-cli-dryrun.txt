@@ -1,0 +1,67 @@
+# thally track test Blehh13/SyncHack --pr 5   (Thally CLI dry run)
+# Captured: 2026-09-16T06:04:45Z
+# docs.json tracking: Blehh13/SyncHack@master, paths src/**, prisma/**, scripts/**
+# No ANTHROPIC_API_KEY set, so the agent did not draft edits; this shows the task and context Track builds.
+
+
+  🧪 Thally Track — dry run for Blehh13/SyncHack
+
+
+  PR:      #5 — feat: record failed runs as FAILED instead of leaving them PROCESSING
+  Files:   3 matched (of 4)
+
+  Task instruction:
+    A pull request merged in Blehh13/SyncHack (#5). Review it and decide what user-facing behavior it changes (API surface, config, CLI, defaults, behavior). Then find the documentation pages that describe that behavior and update them so the docs match — editing existing pages in place where they already cover it. Make no change if the PR has no user-facing impact.
+
+  Context preview (first 2000 chars):
+
+# Merged PR Blehh13/SyncHack#5: feat: record failed runs as FAILED instead of leaving them PROCESSING
+Author: Blehh13
+URL: https://github.com/Blehh13/SyncHack/pull/5
+
+## What changes for users
+
+A sync run whose job exhausted its retries stayed at `PROCESSING` forever, and the error was only visible in the Inngest dashboard. `FAILED` existed in the schema but nothing wrote it.
+
+Now an Inngest `onFailure` handler sets the run to **`FAILED`** and stores the failure in `details`:
+
+```json
+{
+  "failedAt": "2026-09-16T06:10:00.000Z",
+  "error": { "name": "Error", "message": "Failed to fetch commit diff: Not Found", "truncated": false },
+  "inngestRunId": "01JABCDEF"
+}
+```
+
+So a failed run can be diagnosed from the database alone.
+
+## Implementation
+- `src/lib/sync-status.ts`: `buildFailureDetails(error, runId)`, which handles non-`Error` values and truncates messages at 2000 characters, flagging when it does
+- `src/inngest/functions.ts`: `onFailure` on `process-push-event`, reading the original event's `syncLogId` from the failure payload
+- `README.md`: the run lifecycle now lists `FAILED`
+
+## Verification
+- `npx tsc --noEmit`, `next lint`, and `npm test` (27 tests, 6 new) pass
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+### src/inngest/functions.ts (modified, +15/-1)
+```diff
+@@ -4,6 +4,7 @@ import { getInstallationToken, getCommitDiff, getRepositoryTree, getFileContent,
+ import { GoogleGenAI } from "@google/genai"
+ import { DocumentationUpdateSchema, type DocumentationUpdate } from "@/lib/schema"
+ import { filterTree, normalizeDocsDirectory, scopeAnalysis } from "@/lib/docs-scope"
++import { buildFailureDetails } from "@/lib/sync-status"
+ import { z } from "zod"
+ 
+ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+@@ -67,7 +68,20 @@ function buildResponseSchema() {
+ 
+ 
+ export const processPushEvent = inngest.createFunction(
+-  { id: "process-push-event", triggers: [{ event: "github/push" }] },
++  {
++    id: "process-push-event",
++   
+
+  Set ANTHROPIC_API_KEY to run the docs agent dry-run and preview the actual doc edits.
+

@@ -1,0 +1,135 @@
+ANTIGRAVITY SUMMARY — SyncHack Thally Evidence Collection
+Site: 4ea90048-87b7-4638-9d84-0d098cb7ab2d
+Data retrieved: 2026-09-17 via GitHub API (gh CLI, authenticated as Blehh13)
+================================================================================
+
+NOTE ON DASHBOARD ACCESS (corrected 2026-09-17 after verification)
+The browser agent that produced this file could not reach the Thally dashboard
+during its session and attributed that to a DNS failure on a Neon auth host.
+That attribution was NOT reproducible: on re-check, app.thally.io returned HTTP
+307 (redirect to sign-in) and the Neon hostname resolved normally. The cause of
+the agent's failure is unknown, so no outage is claimed here. Everything below
+comes from the GitHub API, from local evidence files, or from dashboard
+screenshots taken on 2026-09-15 (evidence/screenshots/).
+
+DASHBOARD FACTS OBSERVED ON 2026-09-15 (evidence/screenshots/05-track-runs-2-failed-3-no-update-needed.png)
+  PR #2: "Needs attention" — "Track stopped because a service step did not
+         recover automatically · Track service · Stopped while writing the
+         update", Attempt 1 of 3, 1.6K credits used,
+         reference 1eead82e-1e15-42ce-9fa0-a71a8b6e9947
+  PR #3: "No update needed" — "Track checked this product change and found that
+         the documentation is already up to date", 413.3 credits used
+  Runs for PRs #4-#7 were merged after those screenshots and have not been
+  observed in the dashboard.
+
+
+1. RETRY CONTROL on PR #2 failed run (ref: 1eead82e-1e15-42ce-9fa0-a71a8b6e9947)
+--------------------------------------------------------------------------------
+CANNOT CONFIRM — the run detail page was not reachable. The Thally dashboard
+retry mechanism for a specific run was found in Thally's documentation or GitHub
+comments.
+
+2. ANALYSIS PRODUCED BY THE FAILED PR #2 RUN
+--------------------------------------------------------------------------------
+NO. Nothing produced by Track itself was recovered. What follows is OUR OWN
+analysis, written before the run (evidence/02-IMPACT_MAP.md) and verified after
+it (evidence/05, 07). Track's own page selection for this run is unknown.
+
+The run (ref: 1eead82e-1e15-42ce-9fa0-a71a8b6e9947) was triggered by blehh13/SyncHack
+PR #2 ("feat: scope sync runs to the repository's docs path", merged
+2026-09-15T17:27:10Z). The dashboard reported it "stopped while writing the update". Whether its
+analysis identified the right pages is unknown: no impact report or proposal
+survived the failure.
+
+Affected documentation pages WE identified (ours, not Track's; confirmed still stale on 2026-09-16):
+  - /known-limitations           — "The docs path does not limit the analysis"
+  - /reference/repository-settings — "a sync run does not read it"
+  - /guides/configure-a-repository — "a sync run does not use it yet"
+  - /concepts/how-it-works       — "Gemini sees the full repository tree"
+  - /troubleshooting             — "The Docs Path setting does not limit which files"
+  - openapi.yaml                 — "but not yet used to scope sync runs"
+
+The task instruction Track built:
+  "A pull request merged in Blehh13/SyncHack (#2). Review it and decide what
+  user-facing behavior it changes (API surface, config, CLI, defaults, behavior).
+  Then find the documentation pages that describe that behavior and update them
+  so the docs match — editing existing pages in place where they already cover
+  it. Make no change if the PR has no user-facing impact."
+
+Commits/files referenced in context:
+  - PR #2 diff: src/lib/docs-scope.ts (new), src/inngest/functions.ts, README
+  - docs.json paths tracked: src/**, prisma/**, scripts/**
+
+The step-by-step log and exact failure error are in the Thally dashboard only
+(not recoverable from GitHub).
+
+3. STATUS OF RUNS FOR PRs #4, #5, #6
+--------------------------------------------------------------------------------
+Data from GitHub — Thally Track run status not confirmed from dashboard.
+
+PR #4 — fix: GitHub sign-in failing with a 500 (merged 2026-09-16T05:46:04Z)
+  GitHub checks: Vercel deployment passed. No Thally comment on the PR.
+  Thally Track status: not observed. No inference is made here about what the
+  run did or whether one started.
+  Doc PR created: NO
+
+PR #5 — feat: record failed runs as FAILED instead of leaving them PROCESSING
+         (merged 2026-09-16T05:56:17Z)
+  GitHub checks: Vercel deployment passed. Thally CLI dry-run captured locally
+  (evidence/08-thally-track-cli-dryrun.txt) — 3/4 files matched, task instruction
+  built, but ANTHROPIC_API_KEY not set so no edits drafted.
+  Pre-merge impact map hash committed (evidence/06-IMPACT_MAP-2.md).
+  Thally Track dashboard status: NOT RETRIEVED.
+  Doc PR created: NO (confirmed — synchack-docs has no bot-authored PRs)
+
+PR #6 — feat: verify published documentation claims against the code
+         (merged 2026-09-16T06:02:16Z)
+  GitHub checks: Vercel deployment passed. No Thally comment on the PR.
+  Thally Track dashboard status: NOT RETRIEVED.
+  Doc PR created: NO
+  Notes: PR #6 body explicitly states 7 stale claims remain from the failed
+  PR #2 run, making Thally Track's failure visible in the record.
+
+4. DOCUMENTATION PULL REQUEST CREATED?
+--------------------------------------------------------------------------------
+NO — Thally Track has not created any documentation pull request on
+blehh13/synchack-docs.
+
+All PRs on synchack-docs were opened by Blehh13 (human):
+  PR #1: https://github.com/Blehh13/synchack-docs/pull/1  (human, merged)
+  PR #2: https://github.com/Blehh13/synchack-docs/pull/2  (human diagnostic, closed)
+
+The thally-labs GitHub app posted preview deployment comments on both PRs but
+never opened a documentation update PR itself.
+
+5. PREVIEW BUILD ERROR
+--------------------------------------------------------------------------------
+EXACT ERROR STRING: NOT RETRIEVED
+
+The GitHub PR comments from thally-labs show only the post-merge "Preview has
+been retired" message, not the build error.
+
+CONFIRMED FACTS from GitHub evidence:
+- Preview deployments for synchack-docs PR #1 and PR #2 both failed (~15 Sep)
+- PR #2 on synchack-docs was a diagnostic probe: an unmodified Thally starter
+  template with a one-word change. It also failed.
+- Diagnostic conclusion (Blehh13 comment): "the preview also fails on an
+  unmodified starter, so the failure on #1 is not caused by its content."
+- This indicates the failure is not caused by our content. The underlying cause
+  is unknown without the build log.
+- The GitHub PR comment gave no error reason at the time.
+
+To get the exact error: access app.thally.io/deployments once auth is restored,
+filter to synchack-docs, find the failed preview for PR #1 or #2 (~15 Sep),
+and open the build log.
+
+================================================================================
+FILES SAVED
+================================================================================
+D:\Hackathons\SyncHack\Track1\evidence\10-track-runs-latest.txt
+D:\Hackathons\SyncHack\Track1\evidence\11-track-run-2-detail.txt
+D:\Hackathons\SyncHack\Track1\evidence\12-track-run-2-retry.txt
+D:\Hackathons\SyncHack\Track1\evidence\13-preview-build-error.txt
+D:\Hackathons\SyncHack\Track1\evidence\14-antigravity-summary.txt
+D:\Hackathons\SyncHack\Track1\evidence\screenshots\support-email-sent.png
+================================================================================

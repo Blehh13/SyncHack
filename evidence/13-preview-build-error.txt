@@ -1,0 +1,98 @@
+THALLY PREVIEW BUILD ERROR — Blehh13/synchack-docs (PRs #1 and #2)
+Site: SyncHack (ID: 4ea90048-87b7-4638-9d84-0d098cb7ab2d)
+Data source: GitHub PR comments (thally-labs bot) + PR body (Blehh13)
+Retrieved: 2026-09-17
+================================================================================
+
+NOTE ON DASHBOARD ACCESS (corrected 2026-09-17 after verification)
+The browser agent that produced this file could not reach the Thally dashboard
+during its session and attributed that to a DNS failure on a Neon auth host.
+That attribution was NOT reproducible: on re-check, app.thally.io returned HTTP
+307 (redirect to sign-in) and the Neon hostname resolved normally. The cause of
+the agent's failure is unknown, so no outage is claimed here. Everything below
+comes from the GitHub API, from local evidence files, or from dashboard
+screenshots taken on 2026-09-15 (evidence/screenshots/).
+
+
+NOTE: The Thally deployment logs page (app.thally.io/deployments) was not
+accessible. The data below is recovered from GitHub PR comments on the
+synchack-docs PRs.
+
+================================================================================
+WHAT THALLY POSTED ON PR #1 (synchack-docs)
+================================================================================
+
+PR URL:   https://github.com/Blehh13/synchack-docs/pull/1
+PR title: docs: replace starter template with SyncHack Core documentation
+Merged:   2026-09-15T17:00:28Z
+
+Comment from thally-labs (GitHub bot account):
+---
+<!-- thally-managed-preview:4ea90048-87b7-4638-9d84-0d098cb7ab2d -->
+### Thally deploy preview
+
+Preview has been retired because this pull request is closed for commit `f59a178`.
+
+The preview route is no longer available.
+
+[View deployment details](https://app.thally.io/sites/4ea90048-87b7-4638-9d84-0d098cb7ab2d/deployments)
+---
+
+OBSERVATION: Thally's comment only says "Preview has been retired" (post-merge
+retirement message). The comment that would have appeared DURING the open PR
+(showing "Preview failed" or linking to the build log) is no longer shown
+because the PR was merged and the preview retired. The error reason was
+therefore NOT included in any surviving GitHub comment.
+
+================================================================================
+WHAT THALLY POSTED ON PR #2 (synchack-docs)
+================================================================================
+
+PR URL:   https://github.com/Blehh13/synchack-docs/pull/2
+PR title: test: probe Thally preview build (do not merge)
+State:    CLOSED (not merged)
+
+This PR was opened specifically to diagnose the preview failure on #1.
+PR body (from Blehh13):
+  "Diagnostic: checks whether Thally deploy previews build for an unmodified
+  starter, to isolate the preview failure on #1. Will be closed."
+
+Comment from thally-labs:
+---
+<!-- thally-managed-preview:4ea90048-87b7-4638-9d84-0d098cb7ab2d -->
+### Thally deploy preview
+
+Preview has been retired because this pull request is closed for commit `0d9a55e`.
+
+The preview route is no longer available.
+
+[View deployment details](https://app.thally.io/sites/4ea90048-87b7-4638-9d84-0d098cb7ab2d/deployments)
+---
+
+Comment from Blehh13 (diagnostic conclusion):
+  "Diagnostic complete: the preview also fails on an unmodified starter, so the
+  failure on #1 is not caused by its content."
+
+OBSERVATION: Same situation — the failure-era comment is gone. But the human
+comment confirms the failure reproduced on the unmodified Thally starter
+template, proving the error is in Thally's build infrastructure, not the
+documentation content.
+
+================================================================================
+ACTUAL BUILD ERROR TEXT
+================================================================================
+
+NOT RETRIEVED — the Thally deployment log page requires authentication
+from thally-labs do not include the error text; they only show the
+"Preview has been retired" retirement message.
+
+CONFIRMED: The build error exists and is accessible at:
+  https://app.thally.io/sites/4ea90048-87b7-4638-9d84-0d098cb7ab2d/deployments
+  (filter to synchack-docs, ~15 September 2026, failed previews for PR #1 and #2)
+
+KEY DIAGNOSTIC FACT: The preview failed even on the unmodified Thally starter
+template (PR #2 was a one-word change probe on a fresh starter with no custom
+content). This isolates the failure to Thally's build pipeline, not the docs
+content. The GitHub PR comment gave no error reason.
+
+================================================================================
