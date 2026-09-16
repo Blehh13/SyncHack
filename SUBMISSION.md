@@ -57,6 +57,30 @@ SyncHack#3 added only a CI workflow. It changes nothing a user sees. Track analy
 
 ---
 
+## 8b. How to verify each claim
+
+Every statement in this submission maps to something you can open or run. Failures are listed as failures.
+
+| Evaluation criterion | Where the evidence is | How to check it |
+|---|---|---|
+| **1. Quality and usefulness of the finished outcome** | The pipeline in [`src/inngest/functions.ts`](src/inngest/functions.ts) and [`src/lib/docs-scope.ts`](src/lib/docs-scope.ts); 21 tests; CI on every PR | `npm ci && npx tsc --noEmit && npm test`. CI runs the same on [every pull request](https://github.com/Blehh13/SyncHack/actions). The service is self-hosted: see [Quickstart](https://synchack.thally.app/quickstart). It is **not** publicly hosted for judges to sign into. |
+| **2. Completion and credibility of the Track workflow** | The step-by-step table in section 8, plus [`evidence/`](evidence/README.md) | Steps 1, 2, 7 and 8 completed; steps 3–6 did not, because Track failed while drafting (reference `1eead82e-1e15-42ce-9fa0-a71a8b6e9947`). Screenshots: [runs](evidence/screenshots/05-track-runs-2-failed-3-no-update-needed.png), [trigger config](evidence/screenshots/02-track-setup-connected-merged-changes-on.png). |
+| **3. Effective use of the required Thally capabilities** | The published site and its agent surfaces; Track configured and exercised twice | `curl https://synchack.thally.app/api/agent-readiness` → score 100, grade A, 16 pages. `curl https://synchack.thally.app/llms.txt`. MCP: `curl -X POST https://synchack.thally.app/api/mcp -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'`. |
+| **4. Documentation and reader experience** | 16 pages at https://synchack.thally.app, written from the source code | Read [Quickstart](https://synchack.thally.app/quickstart), then [How a sync run works](https://synchack.thally.app/concepts/how-it-works). Pick any statement and find the code behind it, for example `filterTree` in [`src/lib/docs-scope.ts`](src/lib/docs-scope.ts). |
+| **5. Clarity and honesty of the final reflection** | Section 9 below, plus the pre-registered prediction | The prediction's SHA-256 hashes were [posted on the PR](https://github.com/Blehh13/SyncHack/pull/2#issuecomment-5684886934) at `17:26:53Z`, 17 seconds before the merge at `17:27:10Z`. Verify: `sha256sum evidence/02-IMPACT_MAP.md evidence/03-FEATURE_DECISION.md` and compare with that comment. |
+
+### The fastest single check
+The documentation this project exists to keep current is, right now, wrong — and we left it that way rather than fixing it by hand and calling it Track's work:
+
+```bash
+curl -s https://synchack.thally.app/known-limitations.md | grep "does not limit"
+git show origin/master:src/inngest/functions.ts | grep -nE "filterTree|scopeAnalysis"
+```
+
+The first prints a published claim. The second prints the code that makes it false. Full capture: [`evidence/05-drift-still-live-after-merge.md`](evidence/05-drift-still-live-after-merge.md).
+
+---
+
 ## 9. Written reflection
 
 ### What did you accomplish?
