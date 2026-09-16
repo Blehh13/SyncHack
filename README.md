@@ -4,6 +4,20 @@
 
 ---
 
+## SYNC HACK Track 1
+
+| | |
+|---|---|
+| **Live documentation** | https://synchack.thally.app — 16 pages, [100/100 Agent Readiness](https://synchack.thally.app/api/agent-readiness) |
+| **Submission write-up** | [`SUBMISSION.md`](SUBMISSION.md) |
+| **Evidence pack** | [`evidence/`](evidence/README.md) — baseline, pre-registered prediction, Track screenshots, drift capture |
+| **The product change** | [#2](https://github.com/Blehh13/SyncHack/pull/2), merged `649991f` — the docs path is now enforced |
+| **Demo** | [Loom](https://www.loom.com/share/b8595441d1b040b483670dda1f8cc754) |
+
+Thally Track detected both merges. On [#3](https://github.com/Blehh13/SyncHack/pull/3) (CI only) it correctly returned **no update needed**. On [#2](https://github.com/Blehh13/SyncHack/pull/2) it analysed the change and then stopped while writing the update (reference `1eead82e-1e15-42ce-9fa0-a71a8b6e9947`), so no documentation pull request was produced. We did not hand-write that update and attribute it to Track, so the published docs still describe the old behaviour: see [`evidence/05-drift-still-live-after-merge.md`](evidence/05-drift-still-live-after-merge.md).
+
+---
+
 ## The problem
 
 Documentation goes stale the moment code is pushed. Linters and PR templates only complain that docs are missing; they don't write them. Developers either context-switch to fix docs or, more often, let them rot until nobody trusts the README.
