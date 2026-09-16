@@ -4,6 +4,7 @@ import { getInstallationToken, getCommitDiff, getRepositoryTree, getFileContent,
 import { GoogleGenAI } from "@google/genai"
 import { DocumentationUpdateSchema, type DocumentationUpdate } from "@/lib/schema"
 import { filterTree, normalizeDocsDirectory, scopeAnalysis } from "@/lib/docs-scope"
+import { buildFailureDetails } from "@/lib/sync-status"
 import { z } from "zod"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
@@ -67,7 +68,20 @@ function buildResponseSchema() {
 
 
 export const processPushEvent = inngest.createFunction(
-  { id: "process-push-event", triggers: [{ event: "github/push" }] },
+  {
+    id: "process-push-event",
+    triggers: [{ event: "github/push" }],
+    // Inngest calls this once the run has exhausted its retries. Without it a
+    // failed run stayed at PROCESSING and the error lived only in Inngest.
+    onFailure: async ({ event, error }) => {
+      const { syncLogId } = event.data.event.data as PushEventData
+      if (!syncLogId) return
+      await prisma.syncLog.update({
+        where: { id: syncLogId },
+        data: { status: "FAILED", details: buildFailureDetails(error, event.data.run_id) },
+      })
+    },
+  },
   async ({ event, step }) => {
     const { syncLogId, githubRepoId, commitSha, installationId, owner, repoName } =
       event.data as PushEventData
