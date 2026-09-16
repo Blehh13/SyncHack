@@ -7,7 +7,7 @@ Track 1: Keep product knowledge current.
 Banu B B <!-- add any teammates' full names -->
 
 ## 3. Live documentation
-**https://synchack.thally.app**: 14 pages plus an OpenAPI reference, published by Thally from [`Blehh13/synchack-docs`](https://github.com/Blehh13/synchack-docs).
+**https://synchack.thally.app**: 16 pages including an OpenAPI reference, scoring 100/100 (grade A) on Thally's Agent Readiness check ([`/api/agent-readiness`](https://synchack.thally.app/api/agent-readiness)), published by Thally from [`Blehh13/synchack-docs`](https://github.com/Blehh13/synchack-docs).
 
 Agent surfaces, each checked to return current content: [`/llms.txt`](https://synchack.thally.app/llms.txt), [`/llms-full.txt`](https://synchack.thally.app/llms-full.txt), Markdown mirrors (for example [`/known-limitations.md`](https://synchack.thally.app/known-limitations.md)), [`/api/docs-index`](https://synchack.thally.app/api/docs-index), [`/api/search`](https://synchack.thally.app/api/search?q=docsDirectory), and the MCP endpoint at `/api/mcp`.
 
@@ -27,10 +27,10 @@ Agent surfaces, each checked to return current content: [`/llms.txt`](https://sy
 `Blehh13/SyncHack`, watched by Thally Track on `master`, all files, with the "Merged changes" trigger on ([screenshot](evidence/screenshots/03-track-product-repo-watching-master.png)).
 
 ## 6. Demo video
-<!-- FILL: link, max 5 minutes -->
+https://www.loom.com/share/b8595441d1b040b483670dda1f8cc754
 
 ## 7. Public post
-<!-- FILL: X or LinkedIn URL -->
+https://x.com/cswmwiphwasohm_/status/2099934507675865540
 
 ---
 
